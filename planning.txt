@@ -1,0 +1,12 @@
+task management
+
+app that able to:
+- create a project 
+- assign members to project 
+- create tasks 
+- assign member of project to the task (can add multi members)
+- asign deadline for tasks
+- add todo list to tasks
+- able to comment on tasks
+- real time update (socketio)
+
