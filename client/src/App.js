@@ -5,7 +5,9 @@ import Auth from "./views/Auth";
 import AuthContextProvider from "./contexts/AuthContext";
 import Dashboard from "./views/Dashboard";
 import ProtectedRoute from "./components/routing/ProtectedRoute";
+import PrivateRoute from "./components/routing/PrivateRoute";
 import About from "./views/About";
+import Admin from "./views/Admin";
 import ProjectContextProvider from "./contexts/ProjectContext";
 import TaskContextProvider from "./contexts/TaskContext";
 import CommentContextProvider from "./contexts/CommentContext";
@@ -37,6 +39,7 @@ function App() {
                   path="/dashboard/:projectId"
                   component={Detail}
                 />
+                <PrivateRoute exact path="/admin" component={Admin} />
               </Switch>
             </Router>
           </CommentContextProvider>

@@ -7,6 +7,7 @@ import { useContext, useState, useEffect } from "react";
 import { TaskContext } from "../../contexts/TaskContext";
 import { ProjectContext } from "../../contexts/ProjectContext";
 import { CommentContext } from "../../contexts/CommentContext";
+import { DataContext } from "../../GlobalState";
 import moment from "moment";
 import Spinner from "react-bootstrap/Spinner";
 
@@ -30,6 +31,7 @@ const UpdateTaskModal = (props) => {
     addComment,
     deleteComment,
   } = useContext(CommentContext);
+  const state = useContext(DataContext);
   // State
   const [updatedTask, setUpdatedTask] = useState({
     _id: task._id,
@@ -39,6 +41,7 @@ const UpdateTaskModal = (props) => {
     status: task.status,
   });
   const [input, setInput] = useState("");
+  const socket = state.socket;
   useEffect(
     () =>
       setUpdatedTask({
@@ -50,6 +53,22 @@ const UpdateTaskModal = (props) => {
       }),
     [task]
   );
+  //joinrooom
+  useEffect(() => {
+    if (socket) {
+      socket.emit("joinRoom", task._id);
+    }
+  }, [socket, task._id]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("sendCommentToClient", (taskId) => {
+        getComments(taskId);
+      });
+
+      return () => socket.off("sendCommentToClient");
+    }
+  }, [getComments, socket]);
 
   const { taskName, dateDue, assignTo, status } = updatedTask;
 
@@ -92,7 +111,7 @@ const UpdateTaskModal = (props) => {
     const response = await addComment(body);
     if (response.success) {
       setInput("");
-      getComments(task._id);
+      socket.emit("createComment", task._id);
     }
   };
   const onSubmit = async (event) => {
@@ -129,7 +148,7 @@ const UpdateTaskModal = (props) => {
     commentsBody = <h5>Không có bình luận</h5>;
   } else {
     commentsBody = (
-      <div className="overflow-auto" style={{ height: "175px" }}>
+      <div className="overflow-auto" style={{ height: "160px" }}>
         {comments.map((comment) => (
           <li className="list-group-item">
             <div>

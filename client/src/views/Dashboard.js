@@ -48,7 +48,7 @@ const Dashboard = () => {
         <Card className="text-center mx-5 my-5">
           <Card.Header as="h1">Chào {username}</Card.Header>
           <Card.Body>
-            <Card.Title>Chào mừng tới DoT</Card.Title>
+            <Card.Title>Chào mừng tới DT</Card.Title>
             <Card.Text>Nhấn nút phía dưới để bắt đầu tạo dự án</Card.Text>
             <Button
               variant="primary"

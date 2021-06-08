@@ -7,7 +7,7 @@ const _ = require("lodash");
 exports.getComments = async function (req, res) {
   Comment.find({ task: req.params.taskId })
     .populate("user", "username")
-    .sort("createAt")
+    .sort("-createAt")
     .exec(function (err, comments) {
       if (err) {
         console.log(err);
@@ -33,7 +33,7 @@ exports.createComment = async function (req, res) {
     if (!check.includes(true))
       return res.json({ success: false, note: "You cannot access this route" });
   } else {
-    if (project.owner !== req.userId)
+    if (project.owner != req.userId)
       return res.json({ success: false, note: "You cannot access this route" });
   }
   //All good

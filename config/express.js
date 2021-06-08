@@ -19,11 +19,41 @@ module.exports = () => {
   const http = require("http").createServer(app);
   const io = require("socket.io")(http);
   //socket.io
+  let users = [];
   io.on("connection", (socket) => {
-    console.log(socket.id + "connected");
+    //console.log(socket.id + "connected");
+
+    socket.on("joinRoom", (id) => {
+      const user = { userId: socket.id, room: id };
+
+      const check = users.every((user) => user.userId !== socket.id);
+
+      if (check) {
+        users.push(user);
+        socket.join(user.room);
+      } else {
+        users.map((user) => {
+          if (user.userId === socket.id) {
+            if (user.room !== id) {
+              socket.leave(user.room);
+              socket.join(id);
+              user.room = id;
+            }
+          }
+        });
+      }
+
+      // console.log(users);
+      // console.log(socket.adapter.rooms);
+    });
+
+    socket.on("createComment", (taskId) => {
+      io.to(taskId).emit("sendCommentToClient", taskId);
+    });
 
     socket.on("disconnect", () => {
-      console.log(socket.id + "disconnected");
+      users = users.filter((user) => user.userId !== socket.id);
+      //console.log(socket.id + "disconnected");
     });
   });
 
