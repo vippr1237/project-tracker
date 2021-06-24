@@ -11,11 +11,11 @@ Trang web quản lý công việc cho phép người dùng tạo dự án, thêm
 
 #### Setup
 
-##Install dependecies</br>
+## Install dependecies
 cd `client` </br>
 `npm install`</br>
 cd `../` </br>
 `npm install`</br>
 </br>
-##Development</br>
+## Development
 `npm run dev`
