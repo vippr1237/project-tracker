@@ -19,6 +19,11 @@ const About = () => {
           </Button>
         </Col>
       </Row>
+      <Row className="mt-5" style={{ marginRight: 0 }}>
+        <Col className="text-center">
+          Được ý tưởng và phát triển bởi Coang Hà
+        </Col>
+      </Row>
     </>
   );
 };

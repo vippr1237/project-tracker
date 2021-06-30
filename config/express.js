@@ -62,16 +62,10 @@ module.exports = () => {
     require(path.resolve(routePath))(app);
   });
 
-  app.get("/", (req, res) => {
-    res.send("Project Management API");
-  });
   //serving static file for deploy
   if (process.env.NODE_ENV === "production") {
-    app.use(
-      "/build",
-      express.static(path.join(__dirname, "..", "client", "build"))
-    );
-    app.get("/home", (req, res) => {
+    app.use("/", express.static(path.join(__dirname, "..", "client", "build")));
+    app.get("/", (req, res) => {
       res.sendFile(
         path.resolve(__dirname, "..", "client", "build", "index.html")
       );

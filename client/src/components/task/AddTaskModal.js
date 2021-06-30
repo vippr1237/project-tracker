@@ -106,6 +106,7 @@ const AddTaskModal = (props) => {
           <Form.Group>
             <Form.Text>Giao Cho</Form.Text>
             <Form.Control
+              className="border-red"
               as="select"
               value={assignTo}
               name="assignTo"

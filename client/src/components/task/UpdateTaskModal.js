@@ -104,6 +104,7 @@ const UpdateTaskModal = (props) => {
   };
   const submitComment = async (event) => {
     event.preventDefault();
+    if (input.includes("China")) return;
     let body = {
       body: input,
       taskId: task._id,
