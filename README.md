@@ -13,9 +13,7 @@ Bài này làm gấp để chạy kịp deadline nộp bài nên code sẽ xấu
 
 # Setup
 
-#### Setup MongoDB
 
-docker-compose up --build -d mongodb</br>
 
 #### Install dependecies
 
@@ -27,4 +25,5 @@ cd `../` </br>
 
 #### Development
 
-`npm run dev`
+docker-compose up --build -d mongodb</br>
+`npm run dev`</br>
