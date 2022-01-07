@@ -2,6 +2,8 @@
 
 Trang web quản lý công việc cho phép người dùng tạo dự án, thêm thành viên, giao công việc cho thành viên và bình luận công việc. Sử dụng fullstack MERN (Javascript) và ứng dụng socket-io cho realtime<br>
 Bài này làm gấp để chạy kịp deadline nộp bài nên code sẽ xấu và triền miên đặc biệt 1 số file
+<br><br>
+***Đã ứng dụng docker***
 
 # Framework và libaries
 
