@@ -104,7 +104,6 @@ const UpdateTaskModal = (props) => {
   };
   const submitComment = async (event) => {
     event.preventDefault();
-    if (input.includes("China")) return;
     let body = {
       body: input,
       taskId: task._id,
@@ -253,7 +252,10 @@ const UpdateTaskModal = (props) => {
           </Form.Group>
           <Form.Text>Bình luận</Form.Text>
           <Form.Group>
+            <Form onSubmit={submitComment}>
+            <div class="d-flex justify-content-between">
             <input
+              class="w-75 p-1"
               type="text"
               placeholder="Thêm bình luận"
               name="comment"
@@ -262,11 +264,14 @@ const UpdateTaskModal = (props) => {
               aria-describedby="title-help"
               onChange={onInputChange}
             />
-            <Button variant="primary" onClick={submitComment}>
+            <Button variant="primary" type="submit">
               Bình luận
             </Button>
+            </div>
+            </Form>
           </Form.Group>
           {commentsBody}
+
         </Modal.Body>
 
         <Modal.Footer>
