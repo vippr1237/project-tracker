@@ -39,6 +39,13 @@ const RegisterForm = () => {
       return;
     }
 
+    if (password.length < 6 || username.length < 6) {
+      setAlert({ type: "danger", message: "Tài khoản và mật khẩu phải tối thiểu 6 ký tự" });
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
+
+
     try {
       const registerData = await registerUser(registerForm);
       if (registerData.success) {
@@ -105,10 +112,10 @@ const RegisterForm = () => {
         </Button>
       </Form>
       <p>
-        Already have an account?
+        Bạn đã có tài khoản?
         <Link to="/login">
           <Button variant="info" size="sm" className="ml-2">
-            Login
+            Đăng nhập
           </Button>
         </Link>
       </p>
