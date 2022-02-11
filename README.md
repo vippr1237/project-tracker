@@ -17,8 +17,9 @@ Bài này làm gấp để chạy kịp deadline nộp bài nên code sẽ xấu
 
 #### Init setup
 
-For Windows: ./init.cmd
-For Linux: . ./init.sh
+For Windows: `./init.cmd`
+<br>
+For Linux: `. ./init.sh`
 #### Install dependecies
 
 cd `client` </br>
