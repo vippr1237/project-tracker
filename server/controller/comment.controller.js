@@ -3,6 +3,7 @@ const Comment = mongoose.model("comment");
 const Task = mongoose.model("task");
 const Project = mongoose.model("project");
 const _ = require("lodash");
+const nodemailer = require("nodemailer");
 
 exports.getComments = async function (req, res) {
   Comment.find({ task: req.params.taskId })
@@ -58,6 +59,33 @@ exports.createComment = async function (req, res) {
       }
     );
     res.json({ success: true, comment: comment });
+  });
+
+  const transport = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: "7234eb77f9c39e",
+      pass: "3f649abc93e926",
+    },
+  });
+
+  const d = new Date();
+  let time = d.toLocaleString();
+
+  const options = {
+    from: "quanly@coangha.io",
+    to: "monitoring@coangha.io",
+    subject: `Người dùng ${req.userId} đã comment vào ticket ${req.params.taskId}`,
+    text: `Người dùng ${req.userId} đã comment "${body}" vào ticket ${req.params.taskId} lúc ${time}`,
+  };
+
+  transport.sendMail(options, function (err, info) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log("Sent: " + info.response);
   });
 };
 
