@@ -29,7 +29,6 @@ const UpdateTaskModal = (props) => {
     commentState: { comments, commentsLoading },
     getComments,
     addComment,
-    deleteComment,
   } = useContext(CommentContext);
   const state = useContext(DataContext);
   // State
@@ -252,7 +251,7 @@ const UpdateTaskModal = (props) => {
           </Form.Group>
           <Form.Text>Bình luận</Form.Text>
           <Form.Group>
-            <Form onSubmit={submitComment}>
+            <Form>
             <div class="d-flex justify-content-between">
             <input
               class="w-75 p-1"
@@ -264,7 +263,7 @@ const UpdateTaskModal = (props) => {
               aria-describedby="title-help"
               onChange={onInputChange}
             />
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" onClick={submitComment}>
               Bình luận
             </Button>
             </div>
