@@ -85,70 +85,70 @@ exports.requiresLogin = function (req, res, next) {
   }
 };
 
-exports.updateUserTask = function (userId, item) {
-  User.findOne({ _id: userId }, async function (err, user) {
-    if (err) {
-      return err;
+exports.updateUserTask = async function (userId, item) {
+  try {
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      return new Error("User not found");
     }
     if (user.task.includes(item)) return;
-    try {
-      await user.task.push(item);
-      return await user.save();
-    } catch (err) {
-      return err;
-    }
-  });
+    await user.task.push(item);
+    return await user.save();
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
 };
 
-exports.updateUserProject = function (userId, item) {
-  User.findOne({ _id: userId }, async function (err, user) {
-    if (err) {
-      return err;
+exports.updateUserProject = async function (userId, item) {
+  try {
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      return new Error("User not found");
     }
     if (user.project.includes(item)) return;
-    try {
-      await user.project.push(item);
-      user.save();
-    } catch (err) {
-      return err;
+    await user.project.push(item);
+    return await user.save();
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};
+
+exports.authorize = async function (req, res, next) {
+  try {
+    if (req.params.projectId) {
+      const project = await Project.findOne({ _id: req.params.projectId });
+      if (!project) {
+        return res.status(400).send("Project not found");
+      }
+      if (project.owner == req.userId || project.members.includes(req.userId)) {
+        next();
+      } else {
+        return res.status(403).send("You can not access this route");
+      }
+    } else if (req.params.taskId) {
+      const project = await Project.findOne({ tasks: req.params.taskId });
+      if (!project) {
+        return res.status(400).send("Project not found");
+      }
+      if (project.owner == req.userId || project.members.includes(req.userId)) {
+        next();
+      } else {
+        return res.status(403).send("You can not access this route");
+      }
     }
-  });
-};
-
-exports.authorize = function (req, res, next) {
-  if (req.params.projectId) {
-    Project.findOne({ _id: req.params.projectId }, function (err, project) {
-      if (err) {
-        console.log(err);
-        return res.status(400).send("Project not found");
-      }
-      if (project.owner == req.userId || project.members.includes(req.userId)) {
-        next();
-      } else {
-        return res.status(403).send("You can not access this route");
-      }
-    });
-  }
-  if (req.params.taskId) {
-    Project.findOne({ tasks: req.params.taskId }, function (err, project) {
-      if (err) {
-        console.log(err);
-        return res.status(400).send("Project not found");
-      }
-      if (project.owner == req.userId || project.members.includes(req.userId)) {
-        next();
-      } else {
-        return res.status(403).send("You can not access this route");
-      }
-    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Internal server error");
   }
 };
 
-exports.isOwner = function (req, res, next) {
-  if (req.params.projectId) {
-    Project.findOne({ _id: req.params.projectId }, function (err, project) {
-      if (err) {
-        console.log(err);
+exports.isOwner = async function (req, res, next) {
+  try {
+    if (req.params.projectId) {
+      const project = await Project.findOne({ _id: req.params.projectId });
+      if (!project) {
         return res.status(400).send("Project not found");
       }
       if (project.owner == req.userId) {
@@ -156,7 +156,10 @@ exports.isOwner = function (req, res, next) {
       } else {
         return res.status(403).send("You can not access this route");
       }
-    });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Internal server error");
   }
 };
 

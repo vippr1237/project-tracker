@@ -5,50 +5,50 @@ const User = mongoose.model("user");
 const { updateUserProject } = require("../controller/user.controller");
 const _ = require("lodash");
 
-exports.getOwnProjects = function (req, res) {
-  Project.find({ owner: req.userId })
-    .select("-tasks")
-    .select("-members")
-    .sort("-createAt")
-    .exec(function (err, project) {
-      if (err) {
-        console.log(err);
-        return res.json({ success: false, note: "Internal server error" });
-      }
-      res.json({ success: true, ownprojects: project });
-    });
+exports.getOwnProjects = async function (req, res) {
+  try {
+    const project = await Project.find({ owner: req.userId })
+      .select("-tasks")
+      .select("-members")
+      .sort("-createAt")
+      .exec();
+    res.json({ success: true, ownprojects: project });
+  } catch (err) {
+    console.log(err);
+    return res.json({ success: false, note: "Internal server error" });
+  }
 };
 
-exports.getGuessProjects = function (req, res) {
-  Project.find({ members: req.userId })
-    .select("-tasks")
-    .select("-members")
-    .sort("-createAt")
-    .exec(function (err, project) {
-      if (err) {
-        console.log(err);
-        return res
-          .status(500)
-          .json({ success: false, note: "Internal server error" });
-      }
-      res.json({ success: true, guessprojects: project });
-    });
+exports.getGuessProjects = async function (req, res) {
+  try {
+    const project = await Project.find({ members: req.userId })
+      .select("-tasks")
+      .select("-members")
+      .sort("-createAt")
+      .exec();
+    res.json({ success: true, guessprojects: project });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, note: "Internal server error" });
+  }
 };
 
-exports.getProject = function (req, res) {
-  Project.findOne({ _id: req.params.projectId })
-    .populate("members", "username")
-    .populate("owner", "username")
-    .exec(function (err, project) {
-      if (err) {
-        console.log(err);
-        res.json({ success: false, note: "Internal server error" });
-      }
-      res.json({ success: true, project: project });
-    });
+exports.getProject = async function (req, res) {
+  try {
+    const project = await Project.findOne({ _id: req.params.projectId })
+      .populate("members", "username")
+      .populate("owner", "username")
+      .exec();
+    res.json({ success: true, project: project });
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, note: "Internal server error" });
+  }
 };
 
-exports.createProject = function (req, res) {
+exports.createProject = async function (req, res) {
   const { projectName } = req.body;
   if (!projectName)
     return res.json({ status: false, note: "Missing project name" });
@@ -56,18 +56,18 @@ exports.createProject = function (req, res) {
     projectName: projectName,
     owner: req.userId,
   });
-  newProject.save(async function (err, project) {
-    if (err) {
-      console.log(err);
-      res.json({ success: false, note: "Internal server error" });
-    }
+  try {
+    const project = await newProject.save();
     await updateUserProject(req.userId, project._id);
     res.json({
       success: true,
       note: "Thêm dự án thành công",
       project: project,
     });
-  });
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, note: "Internal server error" });
+  }
 };
 
 exports.updateProject = async function (req, res) {
@@ -88,37 +88,30 @@ exports.updateProject = async function (req, res) {
   }
 };
 
-exports.deleteProject = function (req, res) {
-  Project.findOne({ _id: req.params.projectId }, async function (err, project) {
-    if (err) {
-      console.log(err);
-      res.status(401).json({ success: false, note: "Project not found" });
+exports.deleteProject = async function (req, res) {
+  try {
+    const project = await Project.findOne({ _id: req.params.projectId });
+    if (!project) {
+      return res.status(401).json({ success: false, note: "Project not found" });
     }
-    try {
-      const removed = await Project.deleteOne({ _id: project._id });
-      await Task.deleteMany({ _id: { $in: project.tasks } }, function (err) {
-        if (err) {
-          console.log(err);
-          res.status(401).send("Project not found");
-        }
-      });
-      res.json({ success: true, note: "Xóa thành công", project: removed });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ success: false, note: "Internal server error" });
-    }
-  });
+    const removed = await Project.deleteOne({ _id: project._id });
+    await Task.deleteMany({ _id: { $in: project.tasks } });
+    res.json({ success: true, note: "Xóa thành công", project: removed });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, note: "Internal server error" });
+  }
 };
 
 exports.updateMember = async function (req, res) {
-  let members = req.body.members;
-  members = members.filter(function (member, pos) {
-    return members.indexOf(member) == pos;
-  });
-  const membersId = await User.find({ username: { $in: members } }, "_id");
-  Project.findOne({ _id: req.params.projectId }, async function (err, project) {
-    if (err) {
-      console.log(err);
+  try {
+    let members = req.body.members;
+    members = members.filter(function (member, pos) {
+      return members.indexOf(member) == pos;
+    });
+    const membersId = await User.find({ username: { $in: members } }, "_id");
+    const project = await Project.findOne({ _id: req.params.projectId });
+    if (!project) {
       return res.json({ success: false, note: "Project not found" });
     }
     project.members = [];
@@ -138,5 +131,8 @@ exports.updateMember = async function (req, res) {
       note: "Thành viên đã được cập nhật",
       project: result,
     });
-  });
+  } catch (err) {
+    console.log(err);
+    return res.json({ success: false, note: "Internal server error" });
+  }
 };

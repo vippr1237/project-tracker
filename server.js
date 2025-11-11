@@ -3,19 +3,9 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const server = loadExpress();
 
-mongoose.connect(process.env.MONGODB_URI, 
-{
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-}, function(err) {
-    if (err) {
-        console.log(err);
-    } else {
-    console.log("Connected to MongoDB");
-    }
-});
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(err => console.log(err));
 
 // mongoose.connect('mongodb://admin:admin@localhost:27018/test', 
 //     {
